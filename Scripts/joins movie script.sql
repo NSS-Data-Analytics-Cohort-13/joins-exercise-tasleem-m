@@ -7,7 +7,7 @@ ORDER BY rev.worldwide_gross
 --answer: Semi-Tough, 1977, 37187139
 
 --q2 What year has the highest average imdb rating?
-SELECT s.release_year, AVG (rat.imdb_rating) AS avg_rating
+SELECT s.release_year, ROUND (AVG (rat.imdb_rating), 2) AS avg_rating
 FROM specs AS s
 INNER JOIN rating AS rat
 USING (movie_id)
@@ -34,7 +34,7 @@ ON d.distributor_id = s.domestic_distributor_id
 GROUP BY d.company_name
 
 --q5 Write a query that returns the five distributors with the highest average movie budget.
-SELECT d.company_name, AVG (rev.film_budget) AS avg_budget
+SELECT d.company_name, ROUND (AVG (rev.film_budget), 2)::MONEY AS avg_budget
 FROM specs AS s
 INNER JOIN distributors as d
 ON s.domestic_distributor_id = d.distributor_id
@@ -56,15 +56,15 @@ ORDER BY rat.imdb_rating DESC
 --answer: 2; Dirty Dancing
 
 --q7 Which have a higher average rating, movies which are over two hours long or movies which are under two hours?
-SELECT AVG(slt.over_rating) AS movies_over_two_hours_avg_rating
+SELECT 'Over two hours' AS movie_length, ROUND (AVG(slt.over_rating), 2) AS avg_rating
 FROM (SELECT rat.imdb_rating AS over_rating
 		FROM rating AS rat
 		INNER JOIN specs AS s
 		USING (movie_id)
 		WHERE s.length_in_min >= 120 
 		GROUP BY rat.imdb_rating) AS slt
-
-SELECT AVG(slt.under_rating) AS movies_under_two_hours_avg_rating
+UNION ALL
+SELECT 'Over two hours' AS movie_length, ROUND (AVG(slt.under_rating), 2) AS avg_rating
 FROM (SELECT rat.imdb_rating AS under_rating
 		FROM rating AS rat
 		INNER JOIN specs AS s
